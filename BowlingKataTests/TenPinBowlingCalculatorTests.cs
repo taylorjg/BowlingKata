@@ -4,8 +4,6 @@ using NUnit.Framework;
 
 namespace BowlingKataTests
 {
-    // http://codingdojo.org/cgi-bin/wiki.pl?KataBowling
-
     [TestFixture]
     internal class TenPinBowlingCalculatorTests
     {
@@ -90,6 +88,20 @@ namespace BowlingKataTests
         {
             var actual = _tenPinBowlingCalculator.Calculate(10, 10, 1, 2);
             Assert.That(actual, Is.EqualTo((10 + 10 + 1) + (10 + 1 + 2) + (1 + 2)));
+        }
+
+        [Test]
+        public void LastFrameSpareIsHandledProperly()
+        {
+            var actual = _tenPinBowlingCalculator.Calculate(Enumerable.Repeat(0, 18).Concat(new[] { 7, 3, 1 }).ToArray());
+            Assert.That(actual, Is.EqualTo((7 + 3 + 1)));
+        }
+
+        [Test]
+        public void LastFrameStrikeIsHandledProperly()
+        {
+            var actual = _tenPinBowlingCalculator.Calculate(Enumerable.Repeat(0, 18).Concat(new[] { 10, 1, 2 }).ToArray());
+            Assert.That(actual, Is.EqualTo((10 + 1 + 2)));
         }
 
         [Test]

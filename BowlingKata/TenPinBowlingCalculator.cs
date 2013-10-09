@@ -1,13 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BowlingKata
 {
+    // http://codingdojo.org/cgi-bin/wiki.pl?KataBowling
+    // http://en.wikipedia.org/wiki/Ten-pin_bowling
+
     public class TenPinBowlingCalculator
     {
         private const string StrikeSymbol = "X";
         private const string SpareSymbol = "/";
         private const string GutterSymbol = "-";
+
+        private static string RollToString(int roll)
+        {
+            switch (roll)
+            {
+                case 0:
+                    return GutterSymbol;
+
+                case 10:
+                    return StrikeSymbol;
+
+                default:
+                    return System.Convert.ToString(roll);
+            }
+        }
 
         public string RollsToString(params int[] rolls)
         {
@@ -18,29 +35,34 @@ namespace BowlingKata
 
             foreach (var roll in rolls)
             {
-                if (frameNumber > 1)
-                {
-                    var fillInScore = FillInPlaceHolder(placeHolders, roll);
-                    if (fillInScore.HasValue && frameNumber > 10)
-                    {
-                        result += RollToString(roll);
-                    }
-                }
+                var rollString = RollToString(roll);
 
-                if (frameNumber > 2)
+                var index = FindEmptyPlaceHolder(placeHolders);
+
+                if (index >= 0 && frameNumber > 10)
                 {
-                    var fillInScore = FillInPlaceHolder(placeHolders, roll);
-                    if (fillInScore.HasValue && frameNumber > 11)
+                    var frameNumberOfFirstEmptyPlaceHolder = placeHolders[index].FrameNumber;
+                    FillInEmptyPlaceHolder(placeHolders, index, roll);
+                    result += rollString;
+
+                    index = FindEmptyPlaceHolder(placeHolders);
+
+                    if (index >= 0 && frameNumber > 11)
                     {
-                        result += RollToString(roll);
+                        var frameNumberOfSecondEmptyPlaceHolder = placeHolders[index].FrameNumber;
+                        if (frameNumberOfSecondEmptyPlaceHolder > frameNumberOfFirstEmptyPlaceHolder)
+                        {
+                            FillInEmptyPlaceHolder(placeHolders, index, roll);
+                            result += rollString;
+                        }
                     }
                 }
 
                 if (frameNumber <= 10)
                 {
-                    if (RollIsAStrike(roll))
+                    if (roll == 10)
                     {
-                        result += RollToString(roll);
+                        result += rollString;
                         placeHolders.Add(new PlaceHolder(frameNumber));
                         placeHolders.Add(new PlaceHolder(frameNumber));
                         previousRoll = null;
@@ -50,21 +72,21 @@ namespace BowlingKata
                     {
                         if (previousRoll.HasValue)
                         {
-                            if (PreviousRollAndThisRollMakeASpare(previousRoll, roll))
+                            if (previousRoll + roll == 10)
                             {
                                 result += SpareSymbol;
                                 placeHolders.Add(new PlaceHolder(frameNumber));
                             }
                             else
                             {
-                                result += RollToString(roll);
+                                result += rollString;
                             }
                             previousRoll = null;
                             frameNumber++;
                         }
                         else
                         {
-                            result += RollToString(roll);
+                            result += rollString;
                             previousRoll = roll;
                         }
                     }
@@ -83,23 +105,32 @@ namespace BowlingKata
 
             foreach (var roll in rolls)
             {
-                if (frameNumber > 1)
-                {
-                    var fillInScore = FillInPlaceHolder(placeHolders, roll);
-                    total += (fillInScore.HasValue) ? fillInScore.Value : 0;
-                }
+                var index = FindEmptyPlaceHolder(placeHolders);
 
-                if (frameNumber > 2)
+                if (index >= 0)
                 {
-                    var fillInScore = FillInPlaceHolder(placeHolders, roll);
-                    total += (fillInScore.HasValue) ? fillInScore.Value : 0;
+                    var frameNumberOfFirstEmptyPlaceHolder = placeHolders[index].FrameNumber;
+                    FillInEmptyPlaceHolder(placeHolders, index, roll);
+                    total += roll;
+
+                    index = FindEmptyPlaceHolder(placeHolders);
+
+                    if (index >= 0)
+                    {
+                        var frameNumberOfSecondEmptyPlaceHolder = placeHolders[index].FrameNumber;
+                        if (frameNumberOfSecondEmptyPlaceHolder > frameNumberOfFirstEmptyPlaceHolder)
+                        {
+                            FillInEmptyPlaceHolder(placeHolders, index, roll);
+                            total += roll;
+                        }
+                    }
                 }
 
                 if (frameNumber <= 10)
                 {
                     total += roll;
 
-                    if (RollIsAStrike(roll))
+                    if (roll == 10)
                     {
                         placeHolders.Add(new PlaceHolder(frameNumber));
                         placeHolders.Add(new PlaceHolder(frameNumber));
@@ -110,7 +141,7 @@ namespace BowlingKata
                     {
                         if (previousRoll.HasValue)
                         {
-                            if (PreviousRollAndThisRollMakeASpare(previousRoll, roll))
+                            if (previousRoll + roll == 10)
                             {
                                 placeHolders.Add(new PlaceHolder(frameNumber));
                             }
@@ -128,42 +159,14 @@ namespace BowlingKata
             return total;
         }
 
-        private static string RollToString(int roll)
+        private static int FindEmptyPlaceHolder(List<PlaceHolder> placeHolders)
         {
-            if (roll == 10)
-            {
-                return StrikeSymbol;
-            }
-
-            if (roll == 0)
-            {
-                return GutterSymbol;
-            }
-
-            return Convert.ToString(roll);
+            return placeHolders.FindIndex(PlaceHolderExtensions.IsEmpty);
         }
 
-        private static bool RollIsAStrike(int roll)
+        private static void FillInEmptyPlaceHolder(IList<PlaceHolder> placeHolders, int index, int roll)
         {
-            return roll == 10;
-        }
-
-        private static bool PreviousRollAndThisRollMakeASpare(int? previousRoll, int roll)
-        {
-            return previousRoll + roll == 10;
-        }
-
-        private static int? FillInPlaceHolder(List<PlaceHolder> placeHolders, int roll)
-        {
-            var index = placeHolders.FindIndex(PlaceHolderExtensions.IsEmpty);
-
-            if (index < 0)
-            {
-                return null;
-            }
-
             placeHolders[index] = placeHolders[index].With(roll);
-            return roll;
         }
     }
 }

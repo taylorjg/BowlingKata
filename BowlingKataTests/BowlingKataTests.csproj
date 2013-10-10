@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TenPinBowlingCalculatorTests.cs" />
-    <Compile Include="TenPinBowlingRollsToStringTests.cs" />
+    <Compile Include="TenPinBowlingScoringEngineTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

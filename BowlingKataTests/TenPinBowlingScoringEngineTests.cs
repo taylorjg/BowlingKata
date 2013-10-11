@@ -50,21 +50,24 @@ namespace BowlingKataTests
             Assert.That(frame4.ThirdRoll, Is.EqualTo(RollSymbols.BlankSymbol));
         }
 
-        [TestCase(new int[] { }, 0)]
-        [TestCase(new[] { 1, 1 }, 2)]
-        [TestCase(new[] { 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0 }, 90)]
-        [TestCase(new[] { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 }, 150)]
-        [TestCase(new[] { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7 }, 152)]
-        [TestCase(new[] { 10, 10, 1, 2 }, (10 + 10 + 1) + (10 + 1 + 2) + (1 + 2))]
-        [TestCase(new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 1, 2 }, 13)]
-        [TestCase(new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 1 }, 11)]
-        [TestCase(new[] { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10 }, 300)]
+        [TestCase(new int[] {}, 0)]
+        [TestCase(new[] {1, 1}, 2)]
+        [TestCase(new[] {9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0}, 90)]
+        [TestCase(new[] {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}, 150)]
+        [TestCase(new[] {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7}, 152)]
+        [TestCase(new[] {10, 10, 1, 2}, (10 + 10 + 1) + (10 + 1 + 2) + (1 + 2))]
+        [TestCase(new[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 1, 2}, 13)]
+        [TestCase(new[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 1}, 11)]
+        [TestCase(new[] {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}, 300)]
+        [TestCase(new[] {10, 7, 3, 7, 2, 9, 1, 10, 10, 10, 2, 3, 6, 4, 7, 3, 3}, 168)]
         public void CalculateTotalReturnsTheCorrectTotal(int[] rolls, int expectedTotal)
         {
             var tenPinBowlingScoringEngine = new TenPinBowlingScoringEngine();
             var actual = tenPinBowlingScoringEngine.CalculateTotal(rolls);
             Assert.That(actual, Is.EqualTo(expectedTotal));
         }
+
+        // TODO: add tests re partial frames...
 
         [TestCase(new[] { 3, 7, 1, 2 }, "3/12")]
         [TestCase(new[] { 10, 10, 1, 2 }, "XX12")]
@@ -73,6 +76,7 @@ namespace BowlingKataTests
         [TestCase(new[] { 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0 }, "9-9-9-9-9-9-9-9-9-9-")]
         [TestCase(new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 4 }, "------------------3/4")]
         [TestCase(new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 1, 2 }, "------------------X12")]
+        [TestCase(new[] { 10, 7, 3, 7, 2, 9, 1, 10, 10, 10, 2, 3, 6, 4, 7, 3, 3 }, "X7/729/XXX236/7/3")]
         public void RollsToStringReturnsTheCorrectString(int[] rolls, string expectedString)
         {
             var tenPinBowlingScoringEngine = new TenPinBowlingScoringEngine();

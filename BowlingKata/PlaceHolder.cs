@@ -1,6 +1,6 @@
 ﻿namespace BowlingKata
 {
-    internal class PlaceHolder
+    public class PlaceHolder
     {
         public PlaceHolder(int frameNumber)
         {

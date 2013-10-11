@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BowlingKata
+﻿namespace BowlingKata
 {
     // http://codingdojo.org/cgi-bin/wiki.pl?KataBowling
     // http://en.wikipedia.org/wiki/Ten-pin_bowling
@@ -10,28 +8,28 @@ namespace BowlingKata
         public int Calculate(params int[] rolls)
         {
             var frameNumber = 1;
-            var placeHolders = new List<PlaceHolder>();
+            var placeHolderCollection = new PlaceHolderCollection();
             int? previousRoll = null;
             var total = 0;
 
             foreach (var roll in rolls)
             {
-                var index = FindEmptyPlaceHolder(placeHolders);
+                var index = placeHolderCollection.FindFirstEmptyPlaceHolder();
 
                 if (index >= 0)
                 {
-                    var frameNumberOfFirstEmptyPlaceHolder = placeHolders[index].FrameNumber;
-                    FillInEmptyPlaceHolder(placeHolders, index, roll);
+                    var frameNumberOfFirstEmptyPlaceHolder = placeHolderCollection[index].FrameNumber;
+                    placeHolderCollection.UpdatePlaceHolder(index, roll);
                     total += roll;
 
-                    index = FindEmptyPlaceHolder(placeHolders);
+                    index = placeHolderCollection.FindFirstEmptyPlaceHolder();
 
                     if (index >= 0)
                     {
-                        var frameNumberOfSecondEmptyPlaceHolder = placeHolders[index].FrameNumber;
+                        var frameNumberOfSecondEmptyPlaceHolder = placeHolderCollection[index].FrameNumber;
                         if (frameNumberOfSecondEmptyPlaceHolder > frameNumberOfFirstEmptyPlaceHolder)
                         {
-                            FillInEmptyPlaceHolder(placeHolders, index, roll);
+                            placeHolderCollection.UpdatePlaceHolder(index, roll);
                             total += roll;
                         }
                     }
@@ -43,8 +41,8 @@ namespace BowlingKata
 
                     if (roll == 10)
                     {
-                        placeHolders.Add(new PlaceHolder(frameNumber));
-                        placeHolders.Add(new PlaceHolder(frameNumber));
+                        placeHolderCollection.AddPlaceHolder(frameNumber);
+                        placeHolderCollection.AddPlaceHolder(frameNumber);
                         previousRoll = null;
                         frameNumber++;
                     }
@@ -54,7 +52,7 @@ namespace BowlingKata
                         {
                             if (previousRoll + roll == 10)
                             {
-                                placeHolders.Add(new PlaceHolder(frameNumber));
+                                placeHolderCollection.AddPlaceHolder(frameNumber);
                             }
                             previousRoll = null;
                             frameNumber++;
@@ -68,16 +66,6 @@ namespace BowlingKata
             }
 
             return total;
-        }
-
-        private static int FindEmptyPlaceHolder(List<PlaceHolder> placeHolders)
-        {
-            return placeHolders.FindIndex(PlaceHolderExtensions.IsEmpty);
-        }
-
-        private static void FillInEmptyPlaceHolder(IList<PlaceHolder> placeHolders, int index, int roll)
-        {
-            placeHolders[index] = placeHolders[index].With(roll);
         }
     }
 }

@@ -110,5 +110,13 @@ namespace BowlingKataTests
             var actual = _tenPinBowlingCalculator.Calculate(Enumerable.Repeat(10, 12).ToArray());
             Assert.That(actual, Is.EqualTo(300));
         }
+
+        [Test]
+        // http://bowling.about.com/od/rulesofthegame/a/bowlingscoring.htm
+        public void SequenceWithABitOfEverythingGivesCorrectTotal()
+        {
+            var actual = _tenPinBowlingCalculator.Calculate(new[] {10, 7, 3, 7, 2, 9, 1, 10, 10, 10, 2, 3, 6, 4, 7, 3, 3});
+            Assert.That(actual, Is.EqualTo(168));
+        }
     }
 }

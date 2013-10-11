@@ -149,6 +149,13 @@ namespace BowlingKata
                     }
                 }
             }
+
+            // TODO: handle partial frames
+            // e.g.
+            // 4, 4, 5  - frame is missing its second roll
+            // 10       - strike where both the next rolls are missing
+            // 10, 1    - strike where the next roll is present but the next next roll is missing
+            // 2, 8     - spare where the next roll is missing
         }
 
         public int CalculateTotal(params int[] rolls)

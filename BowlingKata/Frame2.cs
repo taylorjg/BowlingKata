@@ -7,41 +7,83 @@
         //public int RunningTotal { get; private set; }
         public Roll FirstRoll { get; private set; }
         public Roll SecondRoll { get; private set; }
-        private int _placeHolderCount;
+        public Roll ThirdRoll { get; private set; }
+
+        private enum FrameState
+        {
+            Empty,
+            Regular,
+            SpareNeedOneMore,
+            StrikeNeedTwoMore,
+            StrikeNeedOneMore,
+            Complete
+        }
+
+        private FrameState _frameState = FrameState.Empty;
 
         public Frame2(int frameNumber)
         {
             FrameNumber = frameNumber;
         }
 
+        public bool IsLastFrame
+        {
+            get { return FrameNumber == 10; }
+        }
+
         public bool ProcessRoll(int roll)
         {
-            if (FirstRoll == null)
+            var consumedRoll = false;
+
+            switch (_frameState)
             {
-                FirstRoll = new Roll(roll);
-                Score += roll;
-            }
-            else if (SecondRoll == null)
-            {
-                var isSpare = (FirstRoll.Value + roll == 10);
-                if (isSpare)
-                {
-                    SecondRoll = new Roll(roll, true);
-                    _placeHolderCount = 1;
-                }
-                else
-                {
-                    SecondRoll = new Roll(roll);
-                }
-                Score += roll;
-            }
-            else if (_placeHolderCount > 0)
-            {
-                Score += roll;
-                _placeHolderCount--;
+                case FrameState.Empty:
+                    FirstRoll = new Roll(roll);
+                    Score += roll;
+                    _frameState = (roll == 10) ? FrameState.StrikeNeedTwoMore : FrameState.Regular;
+                    consumedRoll = true;
+                    break;
+
+                case FrameState.Regular:
+                    var isSpare = (FirstRoll.Value + roll == 10);
+                    SecondRoll = new Roll(roll, isSpare);
+                    Score += roll;
+                    _frameState = (isSpare) ? FrameState.SpareNeedOneMore : FrameState.Complete;
+                    consumedRoll = true;
+                    break;
+
+                case FrameState.SpareNeedOneMore:
+                    if (IsLastFrame)
+                    {
+                        ThirdRoll = new Roll(roll);
+                    }
+                    Score += roll;
+                    _frameState = FrameState.Complete;
+                    break;
+
+                case FrameState.StrikeNeedTwoMore:
+                    if (IsLastFrame)
+                    {
+                        SecondRoll = new Roll(roll);
+                    }
+                    Score += roll;
+                    _frameState = FrameState.StrikeNeedOneMore;
+                    break;
+
+                case FrameState.StrikeNeedOneMore:
+                    if (IsLastFrame)
+                    {
+                        ThirdRoll = new Roll(roll);
+                    }
+                    Score += roll;
+                    _frameState = FrameState.Complete;
+                    break;
+
+                case FrameState.Complete:
+                    break;
             }
 
-            return FirstRoll == null || SecondRoll == null || _placeHolderCount > 0;
+            return consumedRoll;
         }
     }
 }

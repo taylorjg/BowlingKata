@@ -7,15 +7,7 @@ namespace BowlingKata
     {
         public Frame2[] ProcessRolls(IEnumerable<int> rolls)
         {
-            var frames = new List<Frame2>();
-
-            // ReSharper disable LoopCanBeConvertedToQuery
-            foreach (var index in Enumerable.Range(0, 10))
-            {
-                var frameNumber = index + 1;
-                frames.Add(new Frame2(frameNumber));
-            }
-            // ReSharper restore LoopCanBeConvertedToQuery
+            var frames = MakeTenEmptyFrames();
 
             foreach (var roll in rolls)
             {
@@ -29,6 +21,20 @@ namespace BowlingKata
             }
 
             return frames.ToArray();
+        }
+
+        private static List<Frame2> MakeTenEmptyFrames()
+        {
+            var frames = new List<Frame2>();
+
+            // ReSharper disable LoopCanBeConvertedToQuery
+            foreach (var index in Enumerable.Range(0, 10))
+            {
+                var frameNumber = index + 1;
+                frames.Add(new Frame2(frameNumber));
+            }
+            // ReSharper restore LoopCanBeConvertedToQuery
+            return frames;
         }
     }
 }

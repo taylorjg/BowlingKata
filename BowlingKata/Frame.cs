@@ -2,7 +2,7 @@
 {
     public class Frame
     {
-        public int FrameNumber { get; set; }
+        public int FrameNumber { get; private set; }
         public int Score { get; private set; }
         public int RunningTotal { get; private set; }
         public Roll FirstRoll { get; private set; }
@@ -11,15 +11,15 @@
 
         private enum FrameState
         {
-            Empty,
-            Regular,
+            ReadyForFirstRoll,
+            ReadyForSecondRoll,
             SpareNeedOneMore,
             StrikeNeedTwoMore,
             StrikeNeedOneMore,
             Complete
         }
 
-        private FrameState _frameState = FrameState.Empty;
+        private FrameState _frameState = FrameState.ReadyForFirstRoll;
 
         public Frame(int frameNumber)
         {
@@ -42,14 +42,14 @@
 
             switch (_frameState)
             {
-                case FrameState.Empty:
+                case FrameState.ReadyForFirstRoll:
                     FirstRoll = new Roll(roll);
                     Score += roll;
-                    _frameState = (roll == 10) ? FrameState.StrikeNeedTwoMore : FrameState.Regular;
+                    _frameState = (roll == 10) ? FrameState.StrikeNeedTwoMore : FrameState.ReadyForSecondRoll;
                     rollBelongsToThisFrame = true;
                     break;
 
-                case FrameState.Regular:
+                case FrameState.ReadyForSecondRoll:
                     var isSpare = (FirstRoll.Value + roll == 10);
                     SecondRoll = new Roll(roll, isSpare);
                     Score += roll;

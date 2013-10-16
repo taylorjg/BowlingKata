@@ -1,64 +1,94 @@
 ﻿namespace BowlingKata
 {
-    // http://www.apollostemplates.com/pdf-templates/bowling-templates/Bowling_Score_Sheet_3x6_black.pdf
-
     public class Frame
     {
-        private const int LastFrameNumber = 10;
+        public int FrameNumber { get; set; }
+        public int Score { get; private set; }
+        public int RunningTotal { get; private set; }
+        public Roll FirstRoll { get; private set; }
+        public Roll SecondRoll { get; private set; }
+        public Roll ThirdRoll { get; private set; }
 
-        private Frame(
-            int frameNumber,
-            int score,
-            int runningTotal,
-            string firstRoll,
-            string secondRoll = RollSymbols.BlankSymbol,
-            string thirdRoll = RollSymbols.BlankSymbol)
+        private enum FrameState
+        {
+            Empty,
+            Regular,
+            SpareNeedOneMore,
+            StrikeNeedTwoMore,
+            StrikeNeedOneMore,
+            Complete
+        }
+
+        private FrameState _frameState = FrameState.Empty;
+
+        public Frame(int frameNumber)
         {
             FrameNumber = frameNumber;
-            Score = score;
+        }
+
+        public bool IsLastFrame
+        {
+            get { return FrameNumber == 10; }
+        }
+
+        public void SetRunningTotal(int runningTotal)
+        {
             RunningTotal = runningTotal;
-            FirstRoll = firstRoll;
-            SecondRoll = secondRoll;
-            ThirdRoll = thirdRoll;
         }
 
-        public int FrameNumber { get; private set; }
-        public int Score { get; set; }
-        public int RunningTotal { get; set; }
-        public string FirstRoll { get; set; }
-        public string SecondRoll { get; set; }
-        public string ThirdRoll { get; set; }
+        public bool ProcessRoll(int roll)
+        {
+            var consumedRoll = false;
 
-        public bool IsLast {
-            get
+            switch (_frameState)
             {
-                return FrameNumber == LastFrameNumber;
+                case FrameState.Empty:
+                    FirstRoll = new Roll(roll);
+                    Score += roll;
+                    _frameState = (roll == 10) ? FrameState.StrikeNeedTwoMore : FrameState.Regular;
+                    consumedRoll = true;
+                    break;
+
+                case FrameState.Regular:
+                    var isSpare = (FirstRoll.Value + roll == 10);
+                    SecondRoll = new Roll(roll, isSpare);
+                    Score += roll;
+                    _frameState = (isSpare) ? FrameState.SpareNeedOneMore : FrameState.Complete;
+                    consumedRoll = true;
+                    break;
+
+                case FrameState.SpareNeedOneMore:
+                    if (IsLastFrame)
+                    {
+                        ThirdRoll = new Roll(roll);
+                    }
+                    Score += roll;
+                    _frameState = FrameState.Complete;
+                    break;
+
+                case FrameState.StrikeNeedTwoMore:
+                    if (IsLastFrame)
+                    {
+                        SecondRoll = new Roll(roll);
+                    }
+                    Score += roll;
+                    _frameState = FrameState.StrikeNeedOneMore;
+                    break;
+
+                case FrameState.StrikeNeedOneMore:
+                    if (IsLastFrame)
+                    {
+                        ThirdRoll = new Roll(roll);
+                    }
+                    Score += roll;
+                    _frameState = FrameState.Complete;
+                    break;
+
+                case FrameState.Complete:
+                    break;
             }
-        }
 
-        public static Frame UninterestingFrame(int frameNumber, int score, int runningTotal, string firstRoll, string secondRoll)
-        {
-            return new Frame(frameNumber, score, runningTotal, firstRoll, secondRoll);
-        }
-
-        public static Frame SpareFrameNotLast(int frameNumber, int score, int runningTotal, string firstRoll)
-        {
-            return new Frame(frameNumber, score, runningTotal, firstRoll, RollSymbols.SpareSymbol);
-        }
-
-        public static Frame StrikeFrameNotLast(int frameNumber, int score, int runningTotal)
-        {
-            return new Frame(frameNumber, score, runningTotal, RollSymbols.StrikeSymbol);
-        }
-
-        public static Frame SpareFrameLast(int score, int runningTotal, string firstRoll, string bonusBall)
-        {
-            return new Frame(LastFrameNumber, score, runningTotal, firstRoll, RollSymbols.SpareSymbol, bonusBall);
-        }
-
-        public static Frame StrikeFrameLast(int score, int runningTotal, string firstBonusBall, string secondBonusBall)
-        {
-            return new Frame(LastFrameNumber, score, runningTotal, RollSymbols.StrikeSymbol, firstBonusBall, secondBonusBall);
+            return consumedRoll;
         }
     }
 }

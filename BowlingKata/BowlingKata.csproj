@@ -41,16 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Frame.cs" />
-    <Compile Include="Frame2.cs" />
-    <Compile Include="PlaceHolder.cs" />
-    <Compile Include="PlaceHolderCollection.cs" />
-    <Compile Include="PlaceHolderExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Roll.cs" />
     <Compile Include="RollSymbols.cs" />
-    <Compile Include="TenPinBowlingCalculator.cs" />
     <Compile Include="TenPinBowlingScoringEngine.cs" />
-    <Compile Include="TenPinBowlingScoringEngine2.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

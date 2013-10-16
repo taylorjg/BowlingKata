@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace BowlingKata
+﻿namespace BowlingKata
 {
     public class Roll
     {

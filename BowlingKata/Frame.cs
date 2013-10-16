@@ -38,7 +38,7 @@
 
         public bool ProcessRoll(int roll)
         {
-            var consumedRoll = false;
+            var rollBelongsToThisFrame = false;
 
             switch (_frameState)
             {
@@ -46,7 +46,7 @@
                     FirstRoll = new Roll(roll);
                     Score += roll;
                     _frameState = (roll == 10) ? FrameState.StrikeNeedTwoMore : FrameState.Regular;
-                    consumedRoll = true;
+                    rollBelongsToThisFrame = true;
                     break;
 
                 case FrameState.Regular:
@@ -54,7 +54,7 @@
                     SecondRoll = new Roll(roll, isSpare);
                     Score += roll;
                     _frameState = (isSpare) ? FrameState.SpareNeedOneMore : FrameState.Complete;
-                    consumedRoll = true;
+                    rollBelongsToThisFrame = true;
                     break;
 
                 case FrameState.SpareNeedOneMore:
@@ -88,7 +88,7 @@
                     break;
             }
 
-            return consumedRoll;
+            return rollBelongsToThisFrame;
         }
     }
 }

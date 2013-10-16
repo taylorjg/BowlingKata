@@ -5,17 +5,16 @@
         public const string StrikeSymbol = "X";
         public const string SpareSymbol = "/";
         public const string GutterSymbol = "-";
-        public const string BlankSymbol = "";
 
         public static string RollToString(int roll)
         {
             switch (roll)
             {
                 case 0:
-                    return RollSymbols.GutterSymbol;
+                    return GutterSymbol;
 
                 case 10:
-                    return RollSymbols.StrikeSymbol;
+                    return StrikeSymbol;
 
                 default:
                     return System.Convert.ToString(roll);

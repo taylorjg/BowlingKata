@@ -14,7 +14,8 @@ namespace BowlingKata
             {
                 foreach (var index in Enumerable.Range(0, 10))
                 {
-                    if (frames[index].ProcessRoll(roll))
+                    var rollBelongsToThisFrame = frames[index].ProcessRoll(roll);
+                    if (rollBelongsToThisFrame)
                     {
                         break;
                     }
@@ -29,13 +30,12 @@ namespace BowlingKata
                 frame.SetRunningTotal(runningTotal);
             }
 
-            return frames.ToArray();
+            return frames;
         }
 
         public int CalculateTotalScore(IEnumerable<int> rolls)
         {
-            var frames = ProcessRolls(rolls);
-            return frames.Sum(frame => frame.Score);
+            return ProcessRolls(rolls).Sum(frame => frame.Score);
         }
 
         public string RollsToString(IEnumerable<int> rolls)
@@ -60,18 +60,9 @@ namespace BowlingKata
             }
         }
 
-        private static List<Frame> MakeTenEmptyFrames()
+        private static Frame[] MakeTenEmptyFrames()
         {
-            var frames = new List<Frame>();
-
-            // ReSharper disable LoopCanBeConvertedToQuery
-            foreach (var index in Enumerable.Range(0, 10))
-            {
-                var frameNumber = index + 1;
-                frames.Add(new Frame(frameNumber));
-            }
-            // ReSharper restore LoopCanBeConvertedToQuery
-            return frames;
+            return Enumerable.Range(1, 10).Select(frameNumber => new Frame(frameNumber)).ToArray();
         }
     }
 }

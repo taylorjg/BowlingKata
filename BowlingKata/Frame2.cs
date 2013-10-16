@@ -4,7 +4,7 @@
     {
         public int FrameNumber { get; set; }
         public int Score { get; private set; }
-        //public int RunningTotal { get; private set; }
+        public int RunningTotal { get; private set; }
         public Roll FirstRoll { get; private set; }
         public Roll SecondRoll { get; private set; }
         public Roll ThirdRoll { get; private set; }
@@ -29,6 +29,11 @@
         public bool IsLastFrame
         {
             get { return FrameNumber == 10; }
+        }
+
+        public void SetRunningTotal(int runningTotal)
+        {
+            RunningTotal = runningTotal;
         }
 
         public bool ProcessRoll(int roll)

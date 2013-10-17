@@ -31,6 +31,11 @@
             get { return FrameNumber == 10; }
         }
 
+        public bool IsComplete
+        {
+            get { return _frameState == FrameState.Complete; }
+        }
+
         public void SetRunningTotal(int runningTotal)
         {
             RunningTotal = runningTotal;

@@ -58,6 +58,10 @@ namespace BowlingKata
             var runningTotal = 0;
             foreach (var frame in frames)
             {
+                if (!frame.IsComplete)
+                {
+                    break;
+                }
                 runningTotal += frame.Score;
                 frame.SetRunningTotal(runningTotal);
             }

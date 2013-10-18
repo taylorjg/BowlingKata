@@ -22,7 +22,7 @@ namespace BowlingKataApp
 
             foreach (var line in lines)
             {
-                Console.WriteLine(line);
+                WriteLineWithColourHighlights(line);
             }
         }
 
@@ -81,16 +81,6 @@ namespace BowlingKataApp
             return line == null ? Enumerable.Empty<int>() : line.Split(',').Select(int.Parse);
         }
 
-        // +-----+-----+-----+-----+-----+-----+-----+-----+-----+-------+
-        // |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10   |
-        // +-----+-----+-----+-----+-----+-----+-----+-----+-----+-------+
-        // | |X| |                                               | |X|X|X|
-        // | +-+-|                                               | +-+-+-|
-        // |     |                                               |       |
-        // | 30  |                                               |  300  |
-        // |     |                                               |       |
-        // +-----+-----+-----+-----+-----+-----+-----+-----+-----+-------+
-
         private static string[] MakeBeginningsOfLines()
         {
             return new[]
@@ -109,27 +99,37 @@ namespace BowlingKataApp
 
         private static void FormatFrame(Frame frame, IList<string> lines)
         {
+            // +-----+-----+-----+-----+-----+-----+-----+-----+-----+-------+
+            // |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10   |
+            // +-----+-----+-----+-----+-----+-----+-----+-----+-----+-------+
+            // | |X| |                                               | |X|X|X|
+            // | +-+-|                                               | +-+-+-|
+            // |     |                                               |       |
+            // | 30  |                                               |  300  |
+            // |     |                                               |       |
+            // +-----+-----+-----+-----+-----+-----+-----+-----+-----+-------+
+
             if (!frame.IsLastFrame)
             {
                 lines[0] += "-----+";
-                lines[1] += string.Format("  {0,-3}|", frame.FrameNumber);
+                lines[1] += string.Format("  <c>{0,-3}</c>|", frame.FrameNumber);
                 lines[2] += "-----+";
-                lines[3] += string.Format(" |{0,-1}|{1,-1}|", RollSymbol(frame.FirstRoll), RollSymbol(frame.SecondRoll));
+                lines[3] += string.Format(" |<c>{0,-1}</c>|<c>{1,-1}</c>|", RollSymbol(frame.FirstRoll), RollSymbol(frame.SecondRoll));
                 lines[4] += " +-+-|";
                 lines[5] += "     |";
-                lines[6] += string.Format(" {0,-4}|", FormatRunningTotal(frame));
+                lines[6] += string.Format(" <c>{0,-4}</c>|", FormatRunningTotal(frame));
                 lines[7] += "     |";
                 lines[8] += "-----+";
             }
             else
             {
                 lines[0] += "-------+";
-                lines[1] += string.Format("  {0,-5}|", frame.FrameNumber);
+                lines[1] += string.Format("  <c>{0,-5}</c>|", frame.FrameNumber);
                 lines[2] += "-------+";
-                lines[3] += string.Format(" |{0,-1}|{1,-1}|{2,-1}|", RollSymbol(frame.FirstRoll), RollSymbol(frame.SecondRoll), RollSymbol(frame.ThirdRoll));
+                lines[3] += string.Format(" |<c>{0,-1}</c>|<c>{1,-1}</c>|<c>{2,-1}</c>|", RollSymbol(frame.FirstRoll), RollSymbol(frame.SecondRoll), RollSymbol(frame.ThirdRoll));
                 lines[4] += " +-+-+-|";
                 lines[5] += "       |";
-                lines[6] += string.Format("  {0,-5}|", FormatRunningTotal(frame));
+                lines[6] += string.Format("  <c>{0,-5}</c>|", FormatRunningTotal(frame));
                 lines[7] += "       |";
                 lines[8] += "-------+";
             }
@@ -143,6 +143,34 @@ namespace BowlingKataApp
         private static string FormatRunningTotal(Frame frame)
         {
             return frame.IsComplete ? string.Format("{0}", frame.RunningTotal) : string.Format("{0}", string.Empty);
+        }
+
+        private const string HighlightStartSentinel = "<c>";
+        private const string HighlightEndSentinel = "</c>";
+
+        private static void WriteLineWithColourHighlights(string line)
+        {
+            for (;;)
+            {
+                var startPos = line.IndexOf(HighlightStartSentinel, StringComparison.Ordinal);
+                var endPos = line.IndexOf(HighlightEndSentinel, StringComparison.Ordinal);
+
+                if (startPos >= 0 && endPos > startPos)
+                {
+                    Console.Write(line.Substring(0, startPos));
+                    var textToHighlight = line.Substring(startPos + HighlightStartSentinel.Length, endPos - startPos - HighlightStartSentinel.Length);
+                    var oldColour = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write(textToHighlight);
+                    Console.ForegroundColor = oldColour;
+                    line = line.Substring(endPos + HighlightEndSentinel.Length);
+                }
+                else
+                {
+                    Console.WriteLine(line);
+                    break;
+                }
+            }
         }
     }
 }

@@ -8,8 +8,8 @@
             IsSpare = isSpare;
         }
 
-        public int Value { get; set; }
-        public bool IsSpare { get; set; }
+        public int Value { get; private set; }
+        public bool IsSpare { get; private set; }
 
         public string Symbol {
             get

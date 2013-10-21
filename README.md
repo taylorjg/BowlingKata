@@ -5,15 +5,10 @@ This is my attempt at the following bowling kata:
 
 * http://codingdojo.org/cgi-bin/wiki.pl?KataBowling
 
-## Future Plans
+I extended the scope of the kata because I wanted to include a console app that could generate a scorecard showing details of each frame.
 
-* Given a sequence of rolls (params array of ints), return a string e.g.
-    * 21 5's => "5/5/5/5/5/5/5/5/5/5/5"
-    * 12 10's => "XXXXXXXXXXXX"
-    * 9 then 0 times 10 => "9-9-9-9-9-9-9-9-9-9-"
-    * etc.
+Most of the action is in the <code>Frame</code> class which uses a <code>FrameState</code> enum to decide how to handle a roll. I then simply pass each roll to each frame until a frame claims the roll as belonging to that frame. This gives earlier frames an opportunity to include the roll in their score e.g. for a spare or strike.
 
-* Experiment with feeding the rolls to the bowling calculator as an <code>IObservable&lt;int&gt;</code> (Reactive Extensions)
+## Screenshot
 
-* Write a console program where the user can enter the rolls (as ints) and the bowling calculator will display the total score along with frame-by-frame details
-
+![Screenshot](https://raw.github.com/taylorjg/BowlingKata/master/Images/Screenshot.png "Screenshot")

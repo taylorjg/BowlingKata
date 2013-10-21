@@ -9,29 +9,40 @@ namespace BowlingKataApp
     {
         private static void Main()
         {
-            var rolls = ChooseRolls();
-
-            var tenPinBowlingScoringEngine = new TenPinBowlingScoringEngine();
-            var frames = tenPinBowlingScoringEngine.ProcessRolls(rolls);
-            var lines = MakeBeginningsOfLines();
-
-            foreach (var frame in frames)
+            for (;;)
             {
-                FormatFrame(frame, lines);
-            }
+                var rolls = ChooseRolls();
 
-            foreach (var line in lines)
-            {
-                WriteLineWithColourHighlights(line);
+                if (rolls == null)
+                {
+                    break;
+                }
+
+                var tenPinBowlingScoringEngine = new TenPinBowlingScoringEngine();
+                var frames = tenPinBowlingScoringEngine.ProcessRolls(rolls);
+                var lines = MakeBeginningsOfLines();
+
+                foreach (var frame in frames)
+                {
+                    FormatFrame(frame, lines);
+                }
+
+                Console.WriteLine();
+
+                foreach (var line in lines)
+                {
+                    WriteLineWithColourHighlights(line);
+                }
             }
         }
 
         private static readonly int[][] MenuOfPredefinedRolls =
             {
+                new[] { 2, 8, 1, 2 },
+                new[] { 10, 1, 2 },
+                new[] { 10, 10, 1, 2 },
                 new[] { 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0 },
                 new[] { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 },
-                new[] { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7 },
-                new[] { 10, 10, 1, 2 },
                 new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 1, 2 },
                 new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 1 },
                 new[] { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10 },
@@ -40,6 +51,7 @@ namespace BowlingKataApp
 
         private static IEnumerable<int> ChooseRolls()
         {
+            Console.WriteLine();
             var optionChar = 'a';
             foreach (var predefinedRolls in MenuOfPredefinedRolls)
             {
@@ -47,12 +59,18 @@ namespace BowlingKataApp
                 optionChar++;
             }
             Console.WriteLine("{0}) I want to enter my own list of rolls", optionChar);
-            Console.Write("Please make a selection (a - {0}): ", optionChar);
+            Console.WriteLine();
+            Console.Write("Please make a selection ('a' - '{0}') or 'q' to quit: ", optionChar);
 
             var line = Console.ReadLine();
 
             if (!string.IsNullOrEmpty(line))
             {
+                if (line[0] == 'q')
+                {
+                    return null;
+                }
+
                 var choiceIndex = line[0] - 'a';
 
                 if (choiceIndex >= 0 && choiceIndex < MenuOfPredefinedRolls.Length)
@@ -65,7 +83,7 @@ namespace BowlingKataApp
                 }
             }
 
-            Console.WriteLine("Unknown selection - using option a)");
+            Console.WriteLine("Unknown selection - using option 'a'");
             return MenuOfPredefinedRolls[0];
         }
 
